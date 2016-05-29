@@ -1,14 +1,10 @@
-d3.csv("/data/babies.csv", function (data) {
+d3.csv("/data/mini_babies.csv", function (data) {
 
-    data.forEach(function (d) {
-        //console.log(d)
-    });
-
-    //sobald die Daten geladen sind, zaubere uns was vor!
-    zaubere(data);
+    var divAreaCLass = '.datas'
+    zaubere(data, divAreaCLass);
 });
 
-zaubere = function (daten) {
+zaubere = function (daten, divAreaCLass) {
     console.log(daten);
 
     var data = daten;
@@ -41,7 +37,7 @@ zaubere = function (daten) {
         .domain([0, 20])
         .range(["red", "green"]);
 
-    var canvas = d3.select('.datas')
+    var canvas = d3.select(divAreaCLass)
         .append('svg')
         .attr('width', w)
         .attr('height', h);
