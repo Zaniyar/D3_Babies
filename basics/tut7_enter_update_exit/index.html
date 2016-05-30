@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tut 3 - Lets do some Shapes</title>
+
+
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+
+
+	<script>
+
+		var dataSet = [10, 20, 30];
+
+		var w = 500;
+		var h = 500;
+
+		var cx = 50;
+		var cy = 50;
+		var r = 25;
+
+		var canvas = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+		var circle1 = canvas.append("circle")
+							.attr("cx", cx)
+							.attr("cy", cy * 2)
+							.attr("r", r);								
+
+		var circle2 = canvas.append("circle")
+							.attr("cx", cx)
+							.attr("cy", cy * 4)
+							.attr("r", r);						
+
+		var circle = canvas.selectAll("circle")
+						.data(dataSet)
+						.attr("fill", "red")
+						.enter()
+							.append("circle")
+							.attr("cx", cx)
+							.attr("cy", cy)
+							.attr("r", r)
+							.attr("fill", "green");
+							
+
+		
+	</script>
+</body>
+</html>
