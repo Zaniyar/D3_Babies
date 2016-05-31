@@ -1,63 +1,69 @@
-var data = [10, 20, 40, 55, 66];
 
-zaubere(data);
+var minAnzahl = +5;
+var defaultSortOrder = "ascending";
+var maxYearFound = +0;
+var data = [];
 
-zaubere = function (daten) {
+d3.csv("data/babies.csv", function(csvData) {
+            csvData.forEach( function(row) {
+                    if(row.jahr > maxYearFound) {
+                        maxYearFound = +row.jahr;
+                    }
+                    data.push( {
+                                year: +row.jahr,
+                                firstName: row.vorname, 
+                                sex: row.geschlecht, 
+                                anzahl: +row.Anzahl
+                               } )
+            });
+            render(defaultSortOrder, minAnzahl, maxYearFound);
+});
 
-    var data = daten;
-    var w = 500;
+function render(d3Comparator, min, year) {
+
+    workingData = data.filter(function(row, index) {
+                                   return row.year == year && row.anzahl >= min
+                              });
+
+    if(d3Comparator) {
+            workingData = workingData.sort(function(a, b) {
+            return d3[d3Comparator](a.anzahl, b.anzahl);
+        });
+    }    
+
+    var minYear = d3.min(workingData, function(d) { return d.year;} );
+    var maxYear = d3.max(workingData, function(d) { return d.year;} );
+
+    var minCount = d3.min(workingData, function(d) { return d.anzahl;} );
+    var maxCount = d3.max(workingData, function(d) { return d.anzahl;} );    
+
+    var range = d3.range(minCount, maxCount, 5);
+
+    var w = 1200;
     var h = 500;
+    
+    var colorScale = d3.scale.category10();
+    
+    var distanceScale = d3.scale
+                        .linear()
+                        .domain([minYear, maxYear])
+                        .range(range);  
 
-    var scale = d3.scale
-        .linear()
-        .domain([0, 60])
-        .range([0, w]);
-
-    var color = d3.scale
-        .linear()
-        .domain([0, 125])
-        .range(["red", "green"]);
 
     var canvas = d3.select('.datas')
         .append('svg')
-        .attr('width', 500)
-        .attr('height', 500);
-
-
-    var bars = canvas.selectAll("rect")
-        .data(data)         // update => dom element is already there - will be updated before enter() function
-        .enter()            // enter => more data elements than dom elements
-        .append("rect")     // exit => more dom elements than data elements
-        .attr("width", 40)
-        .attr("height", function (d) {
-            return scale(d);
-        })
-        .attr("x", function (d, i) {
-            return i * 40
-        })
-        .attr("fill", function (d) {
-            return color(d)
-        })
-
+        .attr('width', w)
+        .attr('height', h)
+            .append("g");
+    
+    var circles = canvas.selectAll("g")
+            .data(workingData)
+            .enter() 
+                .append("circle") 
+                .filter(function(d) { return d.anzahl >= min && d.year === year})  
+                .attr("cy", function(d) { return distanceScale(d.year)})
+                .attr("cx", function(d,i){ return i})
+                .attr("r", function(d){ return  d.anzahl })
+                .attr("fill",function(d){ return colorScale(d.anzahl)})
+                .text(function(d){ return d.firstName; });        
 }
-
-//hier ganz simples beispiel für ein svg kreis und rechteck
-/*
- var canvas = d3.select('.datas')
- .append('svg')
- .attr('width', 500)
- .attr('height', 500);
-
- var circle = canvas.append("circle")
- .attr("cx",100)
- .attr("cy",100)
- .attr("r",50)
- .attr("fill","red");
-
- var rect = canvas.append("rect")
- .attr("width",100)
- .attr("height",100)
- .attr("x",200)
- .attr("y",200);
- */
-
